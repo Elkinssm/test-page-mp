@@ -9,42 +9,62 @@
       body {
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 20px;
+        padding: 2rem;
         background-color: #f0f0f0;
       }
       h1 {
         color: #333;
+        font-size: 2rem;
       }
       .container {
         background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 0 auto;
       }
       .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 1rem;
       }
       .form-group label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 0.5rem;
       }
       .form-group input {
         width: 100%;
-        padding: 8px;
+        padding: 0.5rem;
         box-sizing: border-box;
+        font-size: 1rem;
       }
       button {
-        padding: 10px 15px;
+        padding: 0.75rem 1rem;
         background-color: #007bff;
         color: #fff;
         border: none;
-        border-radius: 4px;
+        border-radius: 0.25rem;
         cursor: pointer;
-        margin-right: 10px;
-        margin-bottom: 10px;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
       }
       button:hover {
         background-color: #0056b3;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 1rem;
+        }
+        .container {
+          padding: 1rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        button {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.875rem;
+        }
       }
     </style>
   </head>
@@ -121,16 +141,16 @@
 
       function auth() {
         my.getAuthCode({
-          scopes: ['User_Base_Info'],
+          scopes: ["User_Base_Info"],
           success: function (res) {
             my.alert({
-              title: 'Autenticación',
+              title: "Autenticación",
               content: `Código de autenticación: ${res.authCode}`,
             });
           },
           fail: function (res) {
             my.alert({
-              title: 'Error',
+              title: "Error",
               content: `Error en la autenticación: ${res.authErrorScopes}`,
             });
           },
@@ -140,14 +160,14 @@
       function showAppId() {
         const appId = my.getAppIdSync();
         my.alert({
-          title: 'AppId',
+          title: "AppId",
           content: `AppId: ${appId}`,
         });
       }
 
       function showToast() {
         my.showToast({
-          content: 'Esto es un toast',
+          content: "Esto es un toast",
           duration: 2000,
         });
       }
@@ -156,7 +176,7 @@
         my.showLoading({
           content: "Cargando...",
         });
-        setTimeout(hideLoading, 3000); // Oculta el mensaje de carga después de 3 segundos
+        setTimeout(hideLoading, 3000);
       }
 
       function hideLoading() {
@@ -167,7 +187,7 @@
         my.getSystemInfo({
           success: function (res) {
             my.alert({
-              title: 'Info del Sistema',
+              title: "Info del Sistema",
               content: JSON.stringify(res),
             });
           },
@@ -178,7 +198,7 @@
         my.getNetworkType({
           success: function (res) {
             my.alert({
-              title: 'Tipo de Red',
+              title: "Tipo de Red",
               content: `Tipo de red: ${res.networkType}`,
             });
           },
@@ -187,7 +207,7 @@
 
       function makePhoneCall() {
         my.makePhoneCall({
-          number: '1234567890',
+          number: "1234567890",
         });
       }
     </script>
