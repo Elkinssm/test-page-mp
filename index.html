@@ -57,6 +57,8 @@
       <button onclick="showAlert()">Mostrar Alerta</button>
       <button onclick="getLocation()">Obtener Ubicación</button>
       <button onclick="scanQRCode()">Escanear Código QR</button>
+      <button onclick="auth()">Autenticación</button>
+      <button onclick="showAppId()">Mostrar AppId</button>
     </div>
 
     <script>
@@ -107,6 +109,32 @@
               content: "No se pudo escanear el código QR.",
             });
           },
+        });
+      }
+
+      function auth() {
+        my.getAuthCode({
+          scopes: ["User_Base_Info"],
+          success: function (res) {
+            my.alert({
+              title: "Autenticación",
+              content: `Código de autenticación: ${res.authCode}`,
+            });
+          },
+          fail: function (res) {
+            my.alert({
+              title: "Error",
+              content: `Error en la autenticación: ${res.authErrorScopes}`,
+            });
+          },
+        });
+      }
+
+      function showAppId() {
+        const appId = my.getAppIdSync();
+        my.alert({
+          title: "AppId",
+          content: `AppId: ${appId}`,
         });
       }
     </script>
