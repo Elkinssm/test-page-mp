@@ -41,6 +41,7 @@
         border-radius: 4px;
         cursor: pointer;
         margin-right: 10px;
+        margin-bottom: 10px;
       }
       button:hover {
         background-color: #0056b3;
@@ -59,6 +60,12 @@
       <button onclick="scanQRCode()">Escanear Código QR</button>
       <button onclick="auth()">Autenticación</button>
       <button onclick="showAppId()">Mostrar AppId</button>
+      <button onclick="showToast()">Mostrar Toast</button>
+      <button onclick="showLoading()">Mostrar Cargando</button>
+      <button onclick="hideLoading()">Ocultar Cargando</button>
+      <button onclick="getSystemInfo()">Obtener Info del Sistema</button>
+      <button onclick="getNetworkType()">Obtener Tipo de Red</button>
+      <button onclick="makePhoneCall()">Hacer Llamada</button>
     </div>
 
     <script>
@@ -114,16 +121,16 @@
 
       function auth() {
         my.getAuthCode({
-          scopes: ["User_Base_Info"],
+          scopes: ['User_Base_Info'],
           success: function (res) {
             my.alert({
-              title: "Autenticación",
+              title: 'Autenticación',
               content: `Código de autenticación: ${res.authCode}`,
             });
           },
           fail: function (res) {
             my.alert({
-              title: "Error",
+              title: 'Error',
               content: `Error en la autenticación: ${res.authErrorScopes}`,
             });
           },
@@ -133,8 +140,54 @@
       function showAppId() {
         const appId = my.getAppIdSync();
         my.alert({
-          title: "AppId",
+          title: 'AppId',
           content: `AppId: ${appId}`,
+        });
+      }
+
+      function showToast() {
+        my.showToast({
+          content: 'Esto es un toast',
+          duration: 2000,
+        });
+      }
+
+      function showLoading() {
+        my.showLoading({
+          content: "Cargando...",
+        });
+        setTimeout(hideLoading, 3000); // Oculta el mensaje de carga después de 3 segundos
+      }
+
+      function hideLoading() {
+        my.hideLoading();
+      }
+
+      function getSystemInfo() {
+        my.getSystemInfo({
+          success: function (res) {
+            my.alert({
+              title: 'Info del Sistema',
+              content: JSON.stringify(res),
+            });
+          },
+        });
+      }
+
+      function getNetworkType() {
+        my.getNetworkType({
+          success: function (res) {
+            my.alert({
+              title: 'Tipo de Red',
+              content: `Tipo de red: ${res.networkType}`,
+            });
+          },
+        });
+      }
+
+      function makePhoneCall() {
+        my.makePhoneCall({
+          number: '1234567890',
         });
       }
     </script>
