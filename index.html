@@ -86,6 +86,8 @@
       <button onclick="getSystemInfo()">Obtener Info del Sistema</button>
       <button onclick="getNetworkType()">Obtener Tipo de Red</button>
       <button onclick="makePhoneCall()">Hacer Llamada</button>
+      <button onclick="makePay()">Pagos</button>
+      
     </div>
 
     <script>
@@ -209,6 +211,23 @@
         my.makePhoneCall({
           number: "1234567890",
         });
+      }
+
+      function makePay() {
+     my.tradePay({
+      paymentUrl:
+        "https://app-test.miniprogramas.claro.com.co/payment?paymentId=O2025012216385101090000",
+      success: function (res) {
+        my.alert({
+          content: JSON.stringify(res),
+        });
+      },
+      fail: function (res) {
+        my.alert({
+          content: JSON.stringify(res),
+        });
+      },
+    });
       }
     </script>
   </body>
