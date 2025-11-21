@@ -53,6 +53,48 @@
       button:hover {
         background-color: #0056b3;
       }
+      .debug-panel {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .debug-panel h3 {
+        margin: 0 0 0.5rem 0;
+        color: #495057;
+        font-size: 1.1rem;
+      }
+      .log-entry {
+        font-family: "Courier New", monospace;
+        font-size: 0.875rem;
+        margin: 0.25rem 0;
+        padding: 0.25rem;
+        border-radius: 0.125rem;
+      }
+      .log-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
+      .log-success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .log-error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .log-warning {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+      .clear-logs {
+        background-color: #6c757d;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
       @media (max-width: 600px) {
         body {
           padding: 1rem;
@@ -66,6 +108,9 @@
         button {
           padding: 0.5rem 0.75rem;
           font-size: 0.875rem;
+        }
+        .debug-panel {
+          max-height: 200px;
         }
       }
     </style>
@@ -89,40 +134,127 @@
       <button onclick="getNetworkType()">Obtener Tipo de Red</button>
       <button onclick="makePhoneCall()">Hacer Llamada</button>
       <button onclick="makePay()">Pagos</button>
-      
+
+      <!-- Sección de Debugging -->
+      <hr style="margin: 2rem 0 1rem 0" />
+      <h2Herramientas de Debugging</h2>
+      <button onclick="testMyObject()">Verificar Objeto 'my'</button>
+      <button onclick="testAllAPIs()">Probar Todas las APIs</button>
+      <button onclick="checkSDKVersion()">Versión del SDK</button>
+      <button onclick="debugEnvironment()">Info del Entorno</button>
+      <button onclick="clearLogs()" class="clear-logs">Limpiar Logs</button>
+
+      <div class="debug-panel">
+        <h3> Debug Logs</h3>
+        <div id="debugLogs"></div>
+      </div>
     </div>
 
     <script>
+      // Sistema de logging para debugging
+      const debugLogger = {
+        logs: [],
+        log: function (message, type = "info") {
+          const timestamp = new Date().toLocaleTimeString();
+          const logEntry = {
+            timestamp,
+            message,
+            type,
+            full: `[${timestamp}] ${type.toUpperCase()}: ${message}`,
+          };
+          this.logs.push(logEntry);
+          console.log(logEntry.full);
+          this.updateDebugPanel();
+        },
+        updateDebugPanel: function () {
+          const debugLogsDiv = document.getElementById("debugLogs");
+          if (debugLogsDiv) {
+            debugLogsDiv.innerHTML = this.logs
+              .slice(-20)
+              .map(
+                (log) =>
+                  `<div class="log-entry log-${log.type}">${log.full}</div>`
+              )
+              .join("");
+            debugLogsDiv.scrollTop = debugLogsDiv.scrollHeight;
+          }
+        },
+        clear: function () {
+          this.logs = [];
+          this.updateDebugPanel();
+        },
+      };
+
+      // Función para manejar errores de manera consistente
+      function handleAPIError(apiName, error) {
+        const errorMsg = `Error en ${apiName}: ${JSON.stringify(error)}`;
+        debugLogger.log(errorMsg, "error");
+        my.alert({
+          title: `Error - ${apiName}`,
+          content: errorMsg,
+        });
+      }
+
+      // Función para manejar éxitos
+      function handleAPISuccess(apiName, result) {
+        const successMsg = `${apiName} ejecutado exitosamente`;
+        debugLogger.log(successMsg, "success");
+        debugLogger.log(`Resultado: ${JSON.stringify(result)}`, "info");
+      }
+
       document.addEventListener("AlipayJSBridgeReady", function () {
+        debugLogger.log("SDK de Alipay cargado y listo", "success");
         my.alert({
           title: "SDK Listo",
           content: "El SDK de Alipay está listo para usarse.",
         });
       });
 
+      // Si el SDK no se carga en 5 segundos, mostrar advertencia
+      setTimeout(function () {
+        if (typeof my === "undefined") {
+          debugLogger.log(
+            "ADVERTENCIA: El objeto 'my' no está disponible después de 5 segundos",
+            "warning"
+          );
+        }
+      }, 5000);
+
       function showAlert() {
-        const name = document.getElementById("name").value;
-        my.alert({
-          title: "Mensaje",
-          content: `¡Hola, ${name}! Este es un mini programa de Alipay.`,
-        });
+        try {
+          const name = document.getElementById("name").value;
+          debugLogger.log(`Mostrando alerta para: ${name}`, "info");
+          my.alert({
+            title: "Mensaje",
+            content: `¡Hola, ${name}! Este es un mini programa de Alipay.`,
+          });
+        } catch (error) {
+          handleAPIError("showAlert", error);
+        }
       }
 
       function getLocation() {
-        my.getLocation({
-          success: function (res) {
-            my.alert({
-              title: "Ubicación",
-              content: `Latitud: ${res.latitude}, Longitud: ${res.longitude}`,
-            });
-          },
-          fail: function () {
-            my.alert({
-              title: "Error",
-              content: "No se pudo obtener la ubicación.",
-            });
-          },
-        });
+        try {
+          debugLogger.log("Solicitando ubicación...", "info");
+          my.getLocation({
+            success: function (res) {
+              handleAPISuccess("getLocation", res);
+              my.alert({
+                title: "Ubicación",
+                content: `Latitud: ${res.latitude}, Longitud: ${res.longitude}`,
+              });
+            },
+            fail: function (error) {
+              handleAPIError("getLocation", error);
+              my.alert({
+                title: "Error",
+                content: "No se pudo obtener la ubicación.",
+              });
+            },
+          });
+        } catch (error) {
+          handleAPIError("getLocation", error);
+        }
       }
 
       function scanQRCode() {
@@ -216,20 +348,204 @@
       }
 
       function makePay() {
-     my.tradePay({
-      paymentUrl:
-        "https://app-test.miniprogramas.claro.com.co/payment?paymentId=O2025012216385101090000",
-      success: function (res) {
-        my.alert({
-          content: JSON.stringify(res),
+        try {
+          const paymentUrl =
+            "https://app-test.miniprogramas.claro.com.co/payment?paymentId=O2025012216385101090000";
+          debugLogger.log(`Iniciando pago con URL: ${paymentUrl}`, "info");
+
+          my.tradePay({
+            paymentUrl: paymentUrl,
+            success: function (res) {
+              handleAPISuccess("tradePay", res);
+              my.alert({
+                title: "Pago Exitoso",
+                content: JSON.stringify(res, null, 2),
+              });
+            },
+            fail: function (res) {
+              handleAPIError("tradePay", res);
+              my.alert({
+                title: "Error en Pago",
+                content: JSON.stringify(res, null, 2),
+              });
+            },
+          });
+        } catch (error) {
+          handleAPIError("makePay", error);
+        }
+      }
+
+      // ========== FUNCIONES DE DEBUGGING ==========
+
+      function testMyObject() {
+        debugLogger.log("Verificando objeto 'my'...", "info");
+
+        if (typeof my === "undefined") {
+          debugLogger.log("ERROR: El objeto 'my' no está definido", "error");
+          alert(
+            "El objeto 'my' no está disponible. Verifica que el SDK esté cargado correctamente."
+          );
+          return;
+        }
+
+        const availableMethods = [];
+        const methods = [
+          "alert",
+          "getLocation",
+          "scan",
+          "getAuthCode",
+          "getAppIdSync",
+          "showToast",
+          "showLoading",
+          "hideLoading",
+          "getSystemInfo",
+          "getNetworkType",
+          "makePhoneCall",
+          "tradePay",
+        ];
+
+        methods.forEach((method) => {
+          if (typeof my[method] === "function") {
+            availableMethods.push(method);
+          }
         });
-      },
-      fail: function (res) {
+
+        debugLogger.log(
+          `Métodos disponibles: ${availableMethods.join(", ")}`,
+          "success"
+        );
         my.alert({
-          content: JSON.stringify(res),
+          title: "Objeto 'my' verificado",
+          content: `Métodos disponibles: ${availableMethods.length}/${
+            methods.length
+          }\n\n${availableMethods.join("\n")}`,
         });
-      },
-    });
+      }
+
+      function testAllAPIs() {
+        debugLogger.log("Iniciando prueba de todas las APIs...", "info");
+
+        const tests = [
+          { name: "getAppIdSync", test: () => my.getAppIdSync() },
+          {
+            name: "getSystemInfo",
+            test: () =>
+              my.getSystemInfo({
+                success: (res) =>
+                  debugLogger.log(`SystemInfo: ${JSON.stringify(res)}`, "info"),
+              }),
+          },
+          {
+            name: "getNetworkType",
+            test: () =>
+              my.getNetworkType({
+                success: (res) =>
+                  debugLogger.log(`NetworkType: ${res.networkType}`, "info"),
+              }),
+          },
+        ];
+
+        tests.forEach((test) => {
+          try {
+            const result = test.test();
+            debugLogger.log(` ${test.name}: OK`, "success");
+            if (result !== undefined) {
+              debugLogger.log(
+                `Resultado ${test.name}: ${JSON.stringify(result)}`,
+                "info"
+              );
+            }
+          } catch (error) {
+            debugLogger.log(`${test.name}: ${error.message}`, "error");
+          }
+        });
+
+        my.alert({
+          title: "Prueba de APIs completada",
+          content: "Revisa los logs para ver los resultados detallados",
+        });
+      }
+
+      function checkSDKVersion() {
+        debugLogger.log("Verificando versión del SDK...", "info");
+
+        const sdkInfo = {
+          userAgent: navigator.userAgent,
+          myObjectExists: typeof my !== "undefined",
+          bridgeReady: window.AlipayJSBridgeReady || false,
+          timestamp: new Date().toISOString(),
+        };
+
+        debugLogger.log(
+          `Info del SDK: ${JSON.stringify(sdkInfo, null, 2)}`,
+          "info"
+        );
+
+        my.alert({
+          title: "Información del SDK",
+          content: JSON.stringify(sdkInfo, null, 2),
+        });
+      }
+
+      function debugEnvironment() {
+        debugLogger.log("Analizando entorno de ejecución...", "info");
+
+        const envInfo = {
+          url: window.location.href,
+          protocol: window.location.protocol,
+          host: window.location.host,
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          cookieEnabled: navigator.cookieEnabled,
+          onLine: navigator.onLine,
+          screenSize: `${screen.width}x${screen.height}`,
+          windowSize: `${window.innerWidth}x${window.innerHeight}`,
+          sdkLoaded: typeof my !== "undefined",
+          timestamp: new Date().toISOString(),
+        };
+
+        debugLogger.log(`Entorno: ${JSON.stringify(envInfo, null, 2)}`, "info");
+
+        my.alert({
+          title: "Información del Entorno",
+          content: JSON.stringify(envInfo, null, 2),
+        });
+      }
+
+      function clearLogs() {
+        debugLogger.clear();
+        debugLogger.log("Logs limpiados", "info");
+      }
+
+      // Debug inicial al cargar la página
+      window.addEventListener("load", function () {
+        debugLogger.log("Página cargada completamente", "success");
+        debugLogger.log(`URL actual: ${window.location.href}`, "info");
+        debugLogger.log(`User Agent: ${navigator.userAgent}`, "info");
+      });
+
+      // Capturar errores globales
+      window.addEventListener("error", function (event) {
+        debugLogger.log(
+          `Error global: ${event.error?.message || event.message}`,
+          "error"
+        );
+        debugLogger.log(
+          `En archivo: ${event.filename}:${event.lineno}:${event.colno}`,
+          "error"
+        );
+      });
+
+      // Verificar si estamos en un entorno de Mini Program
+      if (
+        window.location.protocol === "file:" ||
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        debugLogger.log(
+          " ADVERTENCIA: Ejecutándose localmente. Algunas APIs pueden no funcionar correctamente.",
+          "warning"
+        );
       }
     </script>
   </body>
