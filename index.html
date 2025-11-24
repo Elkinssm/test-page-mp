@@ -276,21 +276,46 @@
       }
 
       function auth() {
-        my.getAuthCode({
-          scopes: ["User_Base_Info"],
-          success: function (res) {
+        try {
+          debugLogger.log("Iniciando proceso de autenticación...", "info");
+          
+          // Verificar que la función existe
+          if (typeof my.getAuthCode !== 'function') {
+            debugLogger.log("ERROR: my.getAuthCode no está disponible", "error");
             my.alert({
-              title: "Autenticación",
-              content: `Código de autenticación: ${res.authCode}`,
+              title: "Error de API",
+              content: "La función getAuthCode no está disponible en este entorno"
             });
-          },
-          fail: function (res) {
-            my.alert({
-              title: "Error",
-              content: `Error en la autenticación: ${res.authErrorScopes}`,
-            });
-          },
-        });
+            return;
+          }
+
+          debugLogger.log("Solicitando código de autenticación con scopes: User_Base_Info", "info");
+          
+          my.getAuthCode({
+            scopes: ["User_Base_Info"],
+            success: function (res) {
+              handleAPISuccess("getAuthCode", res);
+              debugLogger.log(`AuthCode recibido: ${res.authCode}`, "success");
+              my.alert({
+                title: "Autenticación",
+                content: `Código de autenticación: ${res.authCode}`,
+              });
+            },
+            fail: function (res) {
+              handleAPIError("getAuthCode", res);
+              debugLogger.log(`Error scopes: ${JSON.stringify(res.authErrorScopes)}`, "error");
+              my.alert({
+                title: "Error",
+                content: `Error en la autenticación: ${JSON.stringify(res)}`,
+              });
+            },
+            complete: function(res) {
+              debugLogger.log(`Proceso de auth completado: ${JSON.stringify(res)}`, "info");
+            }
+          });
+        } catch (error) {
+          handleAPIError("auth", error);
+        }
       }
 
       function showAppId() {
