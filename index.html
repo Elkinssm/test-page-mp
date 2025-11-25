@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <title>Alipay Mini Program HTML5 Demo</title>
     <!-- Incluye el SDK de Alipay para habilitar las APIs de JavaScript -->
-    <script src="https://cdn.marmot-cloud.com/npm/hylid-bridge/2.10.0/index.js"></script>
-    <!-- <script type="text/javascript" src="https://appx/web-view.min.js"></script> -->
+    <!-- <script src="https://cdn.marmot-cloud.com/npm/hylid-bridge/2.10.0/index.js"></script> -->
+     <!-- Api disponible para claro Co -->
+    <script type="text/javascript" src="https://appx/web-view.min.js"></script>
 
     <style>
       body {
@@ -135,7 +136,7 @@
       <button onclick="makePhoneCall()">Hacer Llamada</button>
       <button onclick="makePay()">Pagos</button>
 
-      <!-- Sección de Debugging -->
+
       <hr style="margin: 2rem 0 1rem 0" />
       <h2Herramientas de Debugging</h2>
       <button onclick="testMyObject()">Verificar Objeto 'my'</button>
@@ -151,7 +152,6 @@
     </div>
 
     <script>
-      // Sistema de logging para debugging
       const debugLogger = {
         logs: [],
         log: function (message, type = "info") {
@@ -185,7 +185,6 @@
         },
       };
 
-      // Función para manejar errores de manera consistente
       function handleAPIError(apiName, error) {
         const errorMsg = `Error en ${apiName}: ${JSON.stringify(error)}`;
         debugLogger.log(errorMsg, "error");
@@ -195,7 +194,6 @@
         });
       }
 
-      // Función para manejar éxitos
       function handleAPISuccess(apiName, result) {
         const successMsg = `${apiName} ejecutado exitosamente`;
         debugLogger.log(successMsg, "success");
@@ -210,7 +208,6 @@
         });
       });
 
-      // Si el SDK no se carga en 5 segundos, mostrar advertencia
       setTimeout(function () {
         if (typeof my === "undefined") {
           debugLogger.log(
@@ -274,7 +271,7 @@
           },
         });
       }
-
+// No funciono en ningun entorno 
       function auth() {
         my.getAuthCode({
           scopes: ["User_Base_Info"],
@@ -349,6 +346,7 @@
 
       function makePay() {
         try {
+          // url de pagos prueba prod de 1 peso
           const paymentUrl =
             "https://app.miniprogramas.claro.com.co/payment?paymentId=O2025112112071405030000";
           debugLogger.log(`Iniciando pago con URL: ${paymentUrl}`, "info");
@@ -375,7 +373,6 @@
         }
       }
 
-      // ========== FUNCIONES DE DEBUGGING ==========
 
       function testMyObject() {
         debugLogger.log("Verificando objeto 'my'...", "info");
@@ -517,14 +514,13 @@
         debugLogger.log("Logs limpiados", "info");
       }
 
-      // Debug inicial al cargar la página
       window.addEventListener("load", function () {
         debugLogger.log("Página cargada completamente", "success");
         debugLogger.log(`URL actual: ${window.location.href}`, "info");
         debugLogger.log(`User Agent: ${navigator.userAgent}`, "info");
       });
 
-      // Capturar errores globales
+
       window.addEventListener("error", function (event) {
         debugLogger.log(
           `Error global: ${event.error?.message || event.message}`,
@@ -536,7 +532,6 @@
         );
       });
 
-      // Verificar si estamos en un entorno de Mini Program
       if (
         window.location.protocol === "file:" ||
         window.location.hostname === "localhost" ||
