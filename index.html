@@ -2,545 +2,283 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Alipay Mini Program HTML5 Demo</title>
-    <!-- Incluye el SDK de Alipay para habilitar las APIs de JavaScript -->
-    <script src="https://cdn.marmot-cloud.com/npm/hylid-bridge/2.10.0/index.js"></script>
-     <!-- Api disponible para claro Co -->
-    <script type="text/javascript" src="https://appx/web-view.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alipay Authorization Test</title>
+    <script src="https://appx/web-view.min.js"></script>
     <style>
       body {
-        font-family: Arial, sans-serif;
         margin: 0;
-        padding: 2rem;
-        background-color: #f0f0f0;
-      }
-      h1 {
-        color: #333;
-        font-size: 2rem;
+        padding: 20px;
+        font-family: Arial;
+        background: #f5f5f5;
       }
       .container {
-        background-color: #fff;
-        padding: 2rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
         max-width: 600px;
         margin: 0 auto;
-      }
-      .form-group {
-        margin-bottom: 1rem;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-      }
-      .form-group input {
-        width: 100%;
-        padding: 0.5rem;
-        box-sizing: border-box;
-        font-size: 1rem;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
       }
       button {
-        padding: 0.75rem 1rem;
-        background-color: #007bff;
-        color: #fff;
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        background: #1677ff;
+        color: white;
         border: none;
-        border-radius: 0.25rem;
+        border-radius: 5px;
+        font-size: 16px;
         cursor: pointer;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
       }
-      button:hover {
-        background-color: #0056b3;
+      .success {
+        background: #52c41a;
       }
-      .debug-panel {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        padding: 1rem;
-        margin-top: 1rem;
-        max-height: 300px;
-        overflow-y: auto;
+      .danger {
+        background: #ff4d4f;
       }
-      .debug-panel h3 {
-        margin: 0 0 0.5rem 0;
-        color: #495057;
-        font-size: 1.1rem;
+      .log {
+        background: #f8f9fa;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        min-height: 200px;
       }
-      .log-entry {
-        font-family: "Courier New", monospace;
-        font-size: 0.875rem;
-        margin: 0.25rem 0;
-        padding: 0.25rem;
-        border-radius: 0.125rem;
+      .status {
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        font-weight: bold;
       }
-      .log-info {
-        background-color: #d1ecf1;
-        color: #0c5460;
-      }
-      .log-success {
-        background-color: #d4edda;
+      .status-success {
+        background: #d4edda;
         color: #155724;
+        border: 1px solid #c3e6cb;
       }
-      .log-error {
-        background-color: #f8d7da;
+      .status-error {
+        background: #f8d7da;
         color: #721c24;
+        border: 1px solid #f5c6cb;
       }
-      .log-warning {
-        background-color: #fff3cd;
-        color: #856404;
-      }
-      .clear-logs {
-        background-color: #6c757d;
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-      }
-      @media (max-width: 600px) {
-        body {
-          padding: 1rem;
-        }
-        .container {
-          padding: 1rem;
-        }
-        h1 {
-          font-size: 1.5rem;
-        }
-        button {
-          padding: 0.5rem 0.75rem;
-          font-size: 0.875rem;
-        }
-        .debug-panel {
-          max-height: 200px;
-        }
+      .status-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Bienvenido a Mi Mini Program en Alipay</h1>
-      <div class="form-group">
-        <label for="name">Nombre:</label>
-        <input type="text" id="name" placeholder="Introduce tu nombre" />
+      <h2>? Alipay Authorization Test</h2>
+      <p>Using correct communication method: my.postMessage / my.onMessage</p>
+
+      <div class="status status-info" id="status">
+        Initializing communication environment...
       </div>
-      <button onclick="showAlert()">Mostrar Alerta</button>
-      <button onclick="getLocation()">Obtener Ubicación</button>
-      <button onclick="scanQRCode()">Escanear Código QR</button>
-      <button onclick="auth()">Autenticación</button>
-      <button onclick="showAppId()">Mostrar AppId</button>
-      <button onclick="showToast()">Mostrar Toast</button>
-      <button onclick="showLoading()">Mostrar Cargando</button>
-      <button onclick="hideLoading()">Ocultar Cargando</button>
-      <button onclick="getSystemInfo()">Obtener Info del Sistema</button>
-      <button onclick="getNetworkType()">Obtener Tipo de Red</button>
-      <button onclick="makePhoneCall()">Hacer Llamada</button>
-      <button onclick="makePay()">Pagos</button>
 
+      <button onclick="getAuthCode()">Get auth_base Authorization Code</button>
+      <button onclick="sendTestMessage()">Send Test Message</button>
+      <button onclick="closeWebView()" class="danger">Close WebView</button>
 
-      <hr style="margin: 2rem 0 1rem 0" />
-      <h2Herramientas de Debugging</h2>
-      <button onclick="testMyObject()">Verificar Objeto 'my'</button>
-      <button onclick="testAllAPIs()">Probar Todas las APIs</button>
-      <button onclick="checkSDKVersion()">Versión del SDK</button>
-      <button onclick="debugEnvironment()">Info del Entorno</button>
-      <button onclick="clearLogs()" class="clear-logs">Limpiar Logs</button>
-
-      <div class="debug-panel">
-        <h3> Debug Logs</h3>
-        <div id="debugLogs"></div>
-      </div>
+      <div class="log" id="log"></div>
     </div>
 
     <script>
-      const debugLogger = {
-        logs: [],
-        log: function (message, type = "info") {
-          const timestamp = new Date().toLocaleTimeString();
-          const logEntry = {
-            timestamp,
-            message,
-            type,
-            full: `[${timestamp}] ${type.toUpperCase()}: ${message}`,
-          };
-          this.logs.push(logEntry);
-          console.log(logEntry.full);
-          this.updateDebugPanel();
-        },
-        updateDebugPanel: function () {
-          const debugLogsDiv = document.getElementById("debugLogs");
-          if (debugLogsDiv) {
-            debugLogsDiv.innerHTML = this.logs
-              .slice(-20)
-              .map(
-                (log) =>
-                  `<div class="log-entry log-${log.type}">${log.full}</div>`
-              )
-              .join("");
-            debugLogsDiv.scrollTop = debugLogsDiv.scrollHeight;
-          }
-        },
-        clear: function () {
-          this.logs = [];
-          this.updateDebugPanel();
-        },
-      };
-
-      function handleAPIError(apiName, error) {
-        const errorMsg = `Error en ${apiName}: ${JSON.stringify(error)}`;
-        debugLogger.log(errorMsg, "error");
-        my.alert({
-          title: `Error - ${apiName}`,
-          content: errorMsg,
-        });
+      // Initialize logging system
+      function initLog() {
+        const logEl = document.getElementById("log");
+        logEl.innerHTML = "<div>=== Communication Log Started ===</div>";
       }
 
-      function handleAPISuccess(apiName, result) {
-        const successMsg = `${apiName} ejecutado exitosamente`;
-        debugLogger.log(successMsg, "success");
-        debugLogger.log(`Resultado: ${JSON.stringify(result)}`, "info");
+      function log(message, type = "info") {
+        const logEl = document.getElementById("log");
+        const timestamp = new Date().toLocaleTimeString();
+        const color =
+          type === "error" ? "red" : type === "success" ? "green" : "#1890ff";
+
+        logEl.innerHTML =
+          `<div style="color: ${color}; margin: 3px 0; font-size: 12px;">[${timestamp}] ${message}</div>` +
+          logEl.innerHTML;
+        console.log(`[H5] ${message}`);
       }
 
-      document.addEventListener("AlipayJSBridgeReady", function () {
-        debugLogger.log("SDK de Alipay cargado y listo", "success");
-        my.alert({
-          title: "SDK Listo",
-          content: "El SDK de Alipay está listo para usarse.",
-        });
-      });
-
-      setTimeout(function () {
-        if (typeof my === "undefined") {
-          debugLogger.log(
-            "ADVERTENCIA: El objeto 'my' no está disponible después de 5 segundos",
-            "warning"
-          );
-        }
-      }, 5000);
-
-      function showAlert() {
-        try {
-          const name = document.getElementById("name").value;
-          debugLogger.log(`Mostrando alerta para: ${name}`, "info");
-          my.alert({
-            title: "Mensaje",
-            content: `¡Hola, ${name}! Este es un mini programa de Alipay.`,
-          });
-        } catch (error) {
-          handleAPIError("showAlert", error);
-        }
+      function updateStatus(message, type = "info") {
+        const statusEl = document.getElementById("status");
+        statusEl.innerHTML = message;
+        statusEl.className = `status status-${type}`;
       }
 
-      function getLocation() {
-        try {
-          debugLogger.log("Solicitando ubicación...", "info");
-          my.getLocation({
-            success: function (res) {
-              handleAPISuccess("getLocation", res);
-              my.alert({
-                title: "Ubicación",
-                content: `Latitud: ${res.latitude}, Longitud: ${res.longitude}`,
-              });
-            },
-            fail: function (error) {
-              handleAPIError("getLocation", error);
-              my.alert({
-                title: "Error",
-                content: "No se pudo obtener la ubicación.",
-              });
-            },
-          });
-        } catch (error) {
-          handleAPIError("getLocation", error);
-        }
-      }
-
-      function scanQRCode() {
-        my.scan({
-          type: "qr",
-          success: function (res) {
-            my.alert({
-              title: "Código QR",
-              content: `Código escaneado: ${res.code}`,
-            });
-          },
-          fail: function () {
-            my.alert({
-              title: "Error",
-              content: "No se pudo escanear el código QR.",
-            });
-          },
-        });
-      }
-// No funciono en ningun entorno 
-      function auth() {
-        my.getAuthCode({
-          scopes: ["User_Base_Info"],
-          success: function (res) {
-            my.alert({
-              title: "Autenticación",
-              content: `Código de autenticación: ${res.authCode}`,
-            });
-          },
-          fail: function (res) {
-            my.alert({
-              title: "Error",
-              content: `Error en la autenticación: ${res.authErrorScopes}`,
-            });
-          },
-        });
-      }
-
-      function showAppId() {
-        const appId = my.getAppIdSync();
-        my.alert({
-          title: "AppId",
-          content: `AppId: ${appId}`,
-        });
-      }
-
-      function showToast() {
-        my.showToast({
-          content: "Esto es un toast",
-          duration: 2000,
-        });
-      }
-
-      function showLoading() {
-        my.showLoading({
-          content: "Cargando...",
-        });
-        setTimeout(hideLoading, 3000);
-      }
-
-      function hideLoading() {
-        my.hideLoading();
-      }
-
-      function getSystemInfo() {
-        my.getSystemInfo({
-          success: function (res) {
-            my.alert({
-              title: "Info del Sistema",
-              content: JSON.stringify(res),
-            });
-          },
-        });
-      }
-
-      function getNetworkType() {
-        my.getNetworkType({
-          success: function (res) {
-            my.alert({
-              title: "Tipo de Red",
-              content: `Tipo de red: ${res.networkType}`,
-            });
-          },
-        });
-      }
-
-      function makePhoneCall() {
-        my.makePhoneCall({
-          number: "1234567890",
-        });
-      }
-
-      function makePay() {
-        try {
-          // url de pagos prueba prod de 1 peso
-          const paymentUrl =
-            "https://app.miniprogramas.claro.com.co/payment?paymentId=O2025112112071405030000";
-          debugLogger.log(`Iniciando pago con URL: ${paymentUrl}`, "info");
-
-          my.tradePay({
-            paymentUrl: paymentUrl,
-            success: function (res) {
-              handleAPISuccess("tradePay", res);
-              my.alert({
-                title: "Pago Exitoso",
-                content: JSON.stringify(res, null, 2),
-              });
-            },
-            fail: function (res) {
-              handleAPIError("tradePay", res);
-              my.alert({
-                title: "Error en Pago",
-                content: JSON.stringify(res, null, 2),
-              });
-            },
-          });
-        } catch (error) {
-          handleAPIError("makePay", error);
-        }
-      }
-
-
-      function testMyObject() {
-        debugLogger.log("Verificando objeto 'my'...", "info");
-
-        if (typeof my === "undefined") {
-          debugLogger.log("ERROR: El objeto 'my' no está definido", "error");
-          alert(
-            "El objeto 'my' no está disponible. Verifica que el SDK esté cargado correctamente."
-          );
-          return;
-        }
-
-        const availableMethods = [];
-        const methods = [
-          "alert",
-          "getLocation",
-          "scan",
-          "getAuthCode",
-          "getAppIdSync",
-          "showToast",
-          "showLoading",
-          "hideLoading",
-          "getSystemInfo",
-          "getNetworkType",
-          "makePhoneCall",
-          "tradePay",
-        ];
-
-        methods.forEach((method) => {
-          if (typeof my[method] === "function") {
-            availableMethods.push(method);
-          }
-        });
-
-        debugLogger.log(
-          `Métodos disponibles: ${availableMethods.join(", ")}`,
-          "success"
-        );
-        my.alert({
-          title: "Objeto 'my' verificado",
-          content: `Métodos disponibles: ${availableMethods.length}/${
-            methods.length
-          }\n\n${availableMethods.join("\n")}`,
-        });
-      }
-
-      function testAllAPIs() {
-        debugLogger.log("Iniciando prueba de todas las APIs...", "info");
-
-        const tests = [
-          { name: "getAppIdSync", test: () => my.getAppIdSync() },
-          {
-            name: "getSystemInfo",
-            test: () =>
-              my.getSystemInfo({
-                success: (res) =>
-                  debugLogger.log(`SystemInfo: ${JSON.stringify(res)}`, "info"),
-              }),
-          },
-          {
-            name: "getNetworkType",
-            test: () =>
-              my.getNetworkType({
-                success: (res) =>
-                  debugLogger.log(`NetworkType: ${res.networkType}`, "info"),
-              }),
-          },
-        ];
-
-        tests.forEach((test) => {
+      // ? Correct message sending method - using my.postMessage
+      function sendToMiniProgram(data) {
+        if (window.my && typeof window.my.postMessage === "function") {
           try {
-            const result = test.test();
-            debugLogger.log(` ${test.name}: OK`, "success");
-            if (result !== undefined) {
-              debugLogger.log(
-                `Resultado ${test.name}: ${JSON.stringify(result)}`,
-                "info"
-              );
-            }
+            // Data format required by Alipay mini program
+            const messageData = { data: data };
+            window.my.postMessage(messageData);
+            log(`? Sent message: ${JSON.stringify(data)}`, "success");
+            return true;
           } catch (error) {
-            debugLogger.log(`${test.name}: ${error.message}`, "error");
+            log(`? Send failed: ${error.message}`, "error");
+            return false;
           }
-        });
-
-        my.alert({
-          title: "Prueba de APIs completada",
-          content: "Revisa los logs para ver los resultados detallados",
-        });
+        } else {
+          log("? Error: window.my.postMessage not available", "error");
+          updateStatus(
+            "Communication environment abnormal, please open in mini program WebView",
+            "error"
+          );
+          return false;
+        }
       }
 
-      function checkSDKVersion() {
-        debugLogger.log("Verificando versión del SDK...", "info");
+      // ? Correct message receiving method - using my.onMessage
+      function setupMessageListener() {
+        if (window.my) {
+          window.my.onMessage = function (data) {
+            log(`? Received message: ${JSON.stringify(data)}`, "success");
+            handleReceivedMessage(data);
+          };
+          log("? my.onMessage listener set up successfully", "success");
+          return true;
+        } else {
+          log(
+            "? window.my does not exist, cannot set up message listener",
+            "error"
+          );
+          return false;
+        }
+      }
 
-        const sdkInfo = {
-          userAgent: navigator.userAgent,
-          myObjectExists: typeof my !== "undefined",
-          bridgeReady: window.AlipayJSBridgeReady || false,
+      // Process received messages
+      function handleReceivedMessage(data) {
+        if (data && typeof data === "object") {
+          if (data.type === "authResponse") {
+            if (data.success) {
+              updateStatus(
+                `? Authorization successful! AuthCode: ${data.authCode}`,
+                "success"
+              );
+              log(
+                `? Authorization successful! AuthCode: ${data.authCode}`,
+                "success"
+              );
+              // Can process authorization code here, such as sending to server
+              handleAuthCode(data.authCode);
+            } else {
+              updateStatus(
+                `? Authorization failed: ${data.error || "Unknown error"}`,
+                "error"
+              );
+              log(`Authorization failed: ${data.error}`, "error");
+            }
+          } else if (data.type === "testResponse") {
+            log(`? Test response: ${data.message}`, "success");
+          } else if (data.type === "welcome") {
+            updateStatus(`? ${data.message}`, "success");
+            log(`Welcome message: ${data.message}`, "success");
+          } else {
+            log(`? Other message: ${JSON.stringify(data)}`, "info");
+          }
+        } else {
+          log(`? Received non-object message: ${data}`, "info");
+        }
+      }
+
+      // Process obtained authorization code
+      function handleAuthCode(authCode) {
+        log(`? Processing authorization code: ${authCode}`, "success");
+        // Can add logic to send authorization code to server here
+        // sendToServer(authCode);
+      }
+
+      // Business function
+      function getAuthCode() {
+        updateStatus("? Requesting authorization...", "info");
+
+        const message = {
+          action: "getAuthCode",
+          scopes: ["auth_base"],
+          requestId: "req_" + Date.now(),
           timestamp: new Date().toISOString(),
         };
 
-        debugLogger.log(
-          `Info del SDK: ${JSON.stringify(sdkInfo, null, 2)}`,
-          "info"
-        );
-
-        my.alert({
-          title: "Información del SDK",
-          content: JSON.stringify(sdkInfo, null, 2),
-        });
+        if (sendToMiniProgram(message)) {
+          log("Authorization request sent, waiting for response...", "info");
+        }
       }
 
-      function debugEnvironment() {
-        debugLogger.log("Analizando entorno de ejecución...", "info");
-
-        const envInfo = {
-          url: window.location.href,
-          protocol: window.location.protocol,
-          host: window.location.host,
-          userAgent: navigator.userAgent,
-          language: navigator.language,
-          cookieEnabled: navigator.cookieEnabled,
-          onLine: navigator.onLine,
-          screenSize: `${screen.width}x${screen.height}`,
-          windowSize: `${window.innerWidth}x${window.innerHeight}`,
-          sdkLoaded: typeof my !== "undefined",
-          timestamp: new Date().toISOString(),
+      function sendTestMessage() {
+        const message = {
+          action: "test",
+          message: "This is a test message",
+          timestamp: Date.now(),
         };
 
-        debugLogger.log(`Entorno: ${JSON.stringify(envInfo, null, 2)}`, "info");
-
-        my.alert({
-          title: "Información del Entorno",
-          content: JSON.stringify(envInfo, null, 2),
-        });
+        sendToMiniProgram(message);
       }
 
-      function clearLogs() {
-        debugLogger.clear();
-        debugLogger.log("Logs limpiados", "info");
+      function closeWebView() {
+        sendToMiniProgram("action/closeWebview");
       }
 
-      window.addEventListener("load", function () {
-        debugLogger.log("Página cargada completamente", "success");
-        debugLogger.log(`URL actual: ${window.location.href}`, "info");
-        debugLogger.log(`User Agent: ${navigator.userAgent}`, "info");
+      // Environment detection and initialization
+      function init() {
+        log("Starting Alipay WebView environment initialization...");
+
+        if (window.my) {
+          log("? window.my object exists", "success");
+          log(
+            `? my object available methods: ${Object.keys(window.my).join(
+              ", "
+            )}`,
+            "info"
+          );
+
+          if (typeof window.my.postMessage === "function") {
+            log("? window.my.postMessage is available", "success");
+          } else {
+            log("? window.my.postMessage is not a function", "error");
+          }
+
+          // Set up message listener
+          if (setupMessageListener()) {
+            updateStatus(
+              "? Communication environment normal, ready to start testing",
+              "success"
+            );
+
+            // Send ready message
+            setTimeout(() => {
+              sendToMiniProgram({
+                action: "pageReady",
+                status: "loaded",
+                timestamp: Date.now(),
+              });
+            }, 500);
+          }
+        } else {
+          updateStatus(
+            "? Error: Not in Alipay mini program environment",
+            "error"
+          );
+          log("? window.my object does not exist", "error");
+          log(`? Current user agent: ${navigator.userAgent}`, "info");
+        }
+      }
+
+      // Initialize after page load complete
+      document.addEventListener("DOMContentLoaded", function () {
+        initLog();
+        log("DOM content loaded");
+
+        // Delay initialization to ensure all resources are loaded
+        setTimeout(init, 100);
       });
 
-
-      window.addEventListener("error", function (event) {
-        debugLogger.log(
-          `Error global: ${event.error?.message || event.message}`,
-          "error"
-        );
-        debugLogger.log(
-          `En archivo: ${event.filename}:${event.lineno}:${event.colno}`,
-          "error"
-        );
-      });
-
-      if (
-        window.location.protocol === "file:" ||
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-      ) {
-        debugLogger.log(
-          " ADVERTENCIA: Ejecutándose localmente. Algunas APIs pueden no funcionar correctamente.",
-          "warning"
-        );
+      // If page is already loaded, initialize directly
+      if (document.readyState === "complete") {
+        setTimeout(init, 100);
       }
     </script>
   </body>
